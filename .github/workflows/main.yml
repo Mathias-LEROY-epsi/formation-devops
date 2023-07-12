@@ -1,0 +1,35 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build_and_tests:
+    name: Build and tests
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        version: [10, 12, 14]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: npm/action-setup@v3
+        with:
+          version: 16.x
+      - uses: actions/setup-node@v3
+        with:
+          version: ${{ matrix.version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+      - name: Install mocha globally
+        run: npm install -g mocha
+      - name: Run tests
+        run: npm run test
